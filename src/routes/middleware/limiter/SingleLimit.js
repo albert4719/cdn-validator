@@ -11,7 +11,7 @@ router.use(async function (req, res, next) {
     const remote_addr = req.remote_addr;
     const uri = req.path;
     const limit = config.limits.single
-    let key = `${config.redis.keyPrefix}:single-limit:${req.get('host')}:${remote_addr}:${uri}`
+    let key = `:single-limit:${req.get('host')}:${remote_addr}:${uri}`
     if (!(await submitLimit(key, limit.count, limit.time))) {
         return Ban(req, res, limit.banTime, `limit_single:${req.path}`);
     }

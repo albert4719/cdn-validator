@@ -12,7 +12,7 @@ router.use(async function (req, res, next) {
     const referer = req.referer;
     const limits = config.limits.direct
     if (referer === 'no-referer') {
-        let key = `${config.redis.keyPrefix}:no-referer:${remote_addr}`
+        let key = `:no-referer:${remote_addr}`
         if (!(await submitLimit(key, limits.count, limits.time))) {
             return Ban(req, res, limits.banTime, `limit_direct:${req.path}`);
         }

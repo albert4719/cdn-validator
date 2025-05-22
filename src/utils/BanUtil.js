@@ -8,13 +8,14 @@ export async function Ban(req, res, time, reason) {
 
     await redis.setex(blockKey, time, reason);
 
-    let banCountKey = `${config.redis.keyPrefix}:banCount:${req.remote_addr}`;
+    let banCountKey = `:banCount:${req.remote_addr}`;
     let banCount = await redis.incr(banCountKey);
+    const banLimit = config.limits.ban
     if (await redis.ttl(banCountKey) < 0) {
         await redis.expire(banCountKey, 86400);
     }
-    if (banCount > 10) {
-        time = 86400;
+    if (banCount > banLimit.totalCount) {
+        time = banLimit.banTime;
         reason = `banCount:${banCount}`;
         await redis.setex(blockKey, time, reason);
     }

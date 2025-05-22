@@ -11,9 +11,9 @@ let router = express.Router();
 router.use(async function (req, res, next) {
     const remote_addr = req.remote_addr;
 
-    let totalTimeKey = `${config.redis.keyPrefix}:crawler:${remote_addr}:totalTime`
+    let totalTimeKey = `:crawler:${remote_addr}:totalTime`
 
-    let timeKey = `${config.redis.keyPrefix}:crawler:${remote_addr}:time`
+    let timeKey = `:crawler:${remote_addr}:time`
 
     let currentTimeStamp = Date.now() / 1000;
 

@@ -8,10 +8,15 @@ let router = express.Router();
 
 router.use(async function (req, res, next) {
     let {remote_addr, referer} = req;
-    req.blockKey = `${config.redis.keyPrefix}:block:${remote_addr}`
+    req.blockKey = `:block:${remote_addr}`
     const origin = req.get('host')
-    if (await redis.exists(req.blockKey)) {
-        logWarn(`[拒绝访问] ${remote_addr}(${getIPLoc(remote_addr)}) ${origin + req.path} ${referer}`)
+    const ttl = await redis.ttl(req.blockKey)
+    if (ttl > -1) {
+        const inc = config.limits.ban.banIncr
+        if (inc > 0) {
+            await redis.expire(req.blockKey, ttl + inc)
+        }
+        logWarn(`[拒绝访问] ${remote_addr}(${getIPLoc(remote_addr)}) ${origin + req.path} ${referer} +${inc}封禁时间: ${ttl}`)
         return res.status(403).send('');
     }
     const uri = req.path;

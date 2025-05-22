@@ -9,7 +9,7 @@ let router = express.Router();
 router.use(async function (req, res, next) {
     const remote_addr = req.remote_addr;
     const limit = config.limits.total
-    let key = `${config.redis.keyPrefix}:total:${remote_addr}`
+    let key = `:total:${remote_addr}`
     if (!(await submitLimit(key, limit.count, limit.time))) {
         return Ban(req, res, limit.banTime, `limit_total:${req.path}`);
     }
