@@ -12,7 +12,7 @@ export async function Ban(req, res, time, reason) {
     let banCount = await redis.incr(banCountKey);
     const banLimit = config.limits.ban
     if (await redis.ttl(banCountKey) < 0) {
-        await redis.expire(banCountKey, 86400);
+        await redis.expire(banCountKey, banLimit.delay);
     }
     if (banCount > banLimit.totalCount) {
         time = banLimit.banTime;
