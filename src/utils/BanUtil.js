@@ -11,9 +11,11 @@ export async function Ban(req, res, time, reason) {
     let banCountKey = `:banCount:${req.remote_addr}`;
     let banCount = await redis.incr(banCountKey);
     const banLimit = config.limits.ban
+
     if (await redis.ttl(banCountKey) < 0) {
         await redis.expire(banCountKey, banLimit.delay);
     }
+
     if (banCount > banLimit.totalCount) {
         time = banLimit.banTime;
         reason = `banCount:${banCount}`;
